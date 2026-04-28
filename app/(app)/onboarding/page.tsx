@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ensureAppUser } from "@/lib/auth/sync-user";
-import { saveRunnerProfile } from "@/app/(app)/onboarding/actions";
+import { saveRunnerProfile } from "./actions";
 import { formatPaceFromSeconds } from "@/lib/format/pace";
 import { Badge, Button, Card, PageHeader, SectionTitle } from "@/components/ui";
 import { SiteShell } from "@/components/site-shell";
