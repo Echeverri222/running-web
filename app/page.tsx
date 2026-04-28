@@ -17,20 +17,26 @@ const features = [
 ];
 
 interface HomePageProps {
-  searchParams: Promise<{
-    code?: string;
-    next?: string;
-  }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
   const params = await searchParams;
 
-  if (params.code) {
-    const callbackParams = new URLSearchParams({
-      code: params.code,
-      next: params.next ?? "/dashboard",
-    });
+  if (typeof params.code === "string") {
+    const callbackParams = new URLSearchParams();
+
+    for (const [key, value] of Object.entries(params)) {
+      if (Array.isArray(value)) {
+        value.forEach((item) => callbackParams.append(key, item));
+      } else if (value) {
+        callbackParams.set(key, value);
+      }
+    }
+
+    if (!callbackParams.has("next")) {
+      callbackParams.set("next", "/dashboard");
+    }
 
     redirect(`/auth/callback?${callbackParams.toString()}`);
   }

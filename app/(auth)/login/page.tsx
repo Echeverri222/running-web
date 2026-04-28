@@ -6,6 +6,7 @@ interface LoginPageProps {
   searchParams: Promise<{
     next?: string;
     error?: string;
+    reason?: string;
   }>;
 }
 
@@ -20,6 +21,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const next = params.next ?? "/dashboard";
   const error = params.error;
+  const reason = params.reason;
 
   return (
     <SiteShell showAuthActions={false}>
@@ -54,6 +56,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
                   <strong style={{ color: "#991b1b" }}>
                     {errorMap[error] ?? "Error de autenticación"}
                   </strong>
+                  {reason ? <span className="muted">{reason}</span> : null}
                 </div>
               ) : (
                 <div className="session">
