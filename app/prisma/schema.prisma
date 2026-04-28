@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  name          String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  profile       RunnerProfile?
+  raceGoals     RaceGoal[]
+  stravaConnection StravaConnection?
+  workouts      Workout[]
+  trainingPlans TrainingPlan[]
+}
+
+model RunnerProfile {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  age              Int?
+  weightKg         Float?
+  heightCm         Float?
+  level            String
+  availableDays    Int
+  easyPaceSecPerKm Int?
+  maxHeartRate     Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model RaceGoal {
+  id          String   @id @default(cuid())
+  userId      String
+  distance    String
+  targetDate  DateTime
+  targetTimeS Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, targetDate])
+}
+
+model Workout {
+  id            String   @id @default(cuid())
+  userId        String
+  trainingPlanId String?
+  trainingSessionId String? @unique
+  date          DateTime
+  type          String
+  source        String   @default("manual")
+  stravaActivityId String? @unique
+  distanceKm    Float
+  durationMin   Float
+  paceSecPerKm  Int?
+  avgHeartRate  Int?
+  maxHeartRate  Int?
+  elevationGain Float?
+  rpe           Int
+  notes         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trainingPlan  TrainingPlan? @relation(fields: [trainingPlanId], references: [id], onDelete: SetNull)
+  trainingSession TrainingSession? @relation(fields: [trainingSessionId], references: [id], onDelete: SetNull)
+
+  @@index([userId, date])
+  @@index([trainingPlanId, date])
+}
+
+model TrainingPlan {
+  id          String         @id @default(cuid())
+  userId      String
+  name        String
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weeks       TrainingWeek[]
+  workouts    Workout[]
+
+  @@index([userId, isActive])
+}
+
+model TrainingWeek {
+  id             String            @id @default(cuid())
+  trainingPlanId String
+  weekNumber     Int
+  startDate      DateTime
+  plannedKm      Float
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  trainingPlan   TrainingPlan      @relation(fields: [trainingPlanId], references: [id], onDelete: Cascade)
+  sessions       TrainingSession[]
+
+  @@index([trainingPlanId, weekNumber])
+}
+
+model TrainingSession {
+  id              String       @id @default(cuid())
+  trainingWeekId  String
+  dayOfWeek       Int
+  scheduledDate   DateTime
+  type            String
+  plannedDistance Float?
+  plannedDuration Int?
+  notes           String?
+  status          String       @default("planned")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  trainingWeek    TrainingWeek @relation(fields: [trainingWeekId], references: [id], onDelete: Cascade)
+  workout         Workout?
+
+  @@index([trainingWeekId, dayOfWeek])
+  @@index([scheduledDate])
+  @@unique([trainingWeekId, scheduledDate])
+}
+
+model StravaConnection {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  stravaAthleteId   String   @unique
+  athleteUsername   String?
+  athleteFirstname  String?
+  athleteLastname   String?
+  scope             String?
+  accessTokenEnc    String
+  refreshTokenEnc   String
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
