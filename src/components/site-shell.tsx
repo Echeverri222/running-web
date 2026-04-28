@@ -26,7 +26,7 @@ export function SiteShell({
 
           <nav className="nav" aria-label="Primary">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="nav-link">
+              <Link key={link.href} href={link.href} prefetch={false} className="nav-link">
                 {link.label}
               </Link>
             ))}
