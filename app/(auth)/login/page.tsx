@@ -31,7 +31,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           title="Entra y vuelve al plan en segundos."
           description="Autentica con Google para abrir tu dashboard, sincronizar Strava y seguir el flujo principal sin pasos manuales."
           actions={
-            <ButtonLink href={`/auth/login?next=${encodeURIComponent(next)}`}>
+            <ButtonLink href={`/auth/login?next=${encodeURIComponent(next)}`} prefetch={false}>
               Continuar con Google
             </ButtonLink>
           }
@@ -77,7 +77,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               </div>
 
               <div className="hero-actions">
-                <ButtonLink href={`/auth/login?next=${encodeURIComponent(next)}`}>
+                <ButtonLink href={`/auth/login?next=${encodeURIComponent(next)}`} prefetch={false}>
                   Continuar con Google
                 </ButtonLink>
                 <Link href="/" className="text-link">

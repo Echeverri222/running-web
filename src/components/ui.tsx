@@ -7,6 +7,7 @@ type ButtonLinkProps = {
   children: React.ReactNode;
   variant?: ButtonVariant;
   className?: string;
+  prefetch?: boolean;
 };
 
 export function ButtonLink({
@@ -14,12 +15,13 @@ export function ButtonLink({
   children,
   variant = "primary",
   className = "",
+  prefetch,
 }: ButtonLinkProps) {
   const variantClass =
     variant === "secondary" ? "button-secondary" : variant === "ghost" ? "button-ghost" : "";
 
   return (
-    <Link href={href} className={`button ${variantClass} ${className}`.trim()}>
+    <Link href={href} prefetch={prefetch} className={`button ${variantClass} ${className}`.trim()}>
       {children}
     </Link>
   );
